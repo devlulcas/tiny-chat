@@ -1,0 +1,14 @@
+{
+  "name": "tiny-chat-app",
+  "version": "1.0.0",
+  "description": "A tiny little chat app",
+  "scripts": {
+    "test": "turbo run test",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck"
+  },
+  "keywords": [],
+  "author": "devlulcas",
+  "license": "ISC"
+}
