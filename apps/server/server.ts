@@ -1,5 +1,7 @@
 import fastifyRateLimit from '@fastify/rate-limit';
+import fastifyWebsocket from '@fastify/websocket';
 import Fastify from 'fastify';
+import { handleWebsocket } from './src/handlers/ws';
 
 const LOGGER_CONFIG =
   process.env.NODE_ENV !== 'production'
@@ -15,8 +17,14 @@ fastify.register(fastifyRateLimit, {
   timeWindow: '1 minute',
 });
 
-fastify.get('/', function (request, reply) {
+fastify.get('/', (_, reply) => {
   reply.send({ hello: 'world' });
+});
+
+fastify.register(fastifyWebsocket);
+
+fastify.register(async function (fastify) {
+  fastify.get('/ws', { websocket: true }, handleWebsocket);
 });
 
 fastify.listen({ port: 8000 }, (err, address) => {
