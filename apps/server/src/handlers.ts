@@ -67,24 +67,16 @@ messageRouter.addHandler('message', (payload, socket) => {
 });
 
 // Ping
-messageRouter.addHandler('ping', (_, socket) => {
-  socket.pong();
-});
+messageRouter.addHandler('ping', (payload, socket) => {
+  const pingSchema = object({ username: string() });
 
-// Pong
-messageRouter.addHandler('pong', (payload, socket) => {
-  console.log('Pong recebido');
-  const pongSchema = object({
-    username: string(),
-  });
+  const validated = safeParse(pingSchema, payload);
 
-  const validated = safeParse(pongSchema, payload);
-
-  if (validated.success === false) {
-    return socket.send(errorMessage(validated.issues));
+  if (validated.success) {
+    chatRoom.handleUserHeartbeat(validated.output.username);
   }
 
-  chatRoom.handleUserHeartbeat(validated.output.username);
+  socket.pong();
 });
 
 // Close
