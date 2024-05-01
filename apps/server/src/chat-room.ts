@@ -75,6 +75,9 @@ export class ChatRoom {
   }
 
   broadcast(message: WebsocketMessage) {
+    console.log('Enviando mensagem para todos os usuários');
+    console.log('Usuários conectados:', this.users.size);
+
     for (const user of this.users.values()) {
       user.socket.send(JSON.stringify(message));
     }

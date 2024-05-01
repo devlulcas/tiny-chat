@@ -64,6 +64,12 @@ messageRouter.addHandler('message', (payload, socket) => {
     return socket.send(errorMessage(validated.issues));
   }
 
+  console.log('Mensagem recebida:', validated.output.text);
+  chatRoom.join(
+    { username: validated.output.username, joinAttempts: 0 },
+    socket
+  );
+  chatRoom.handleUserHeartbeat(validated.output.username);
   chatRoom.broadcast({ type: 'message', payload });
 });
 
