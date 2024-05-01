@@ -1,34 +1,6 @@
 import { WebSocket } from '@fastify/websocket';
-import { Output, object, record, safeParse, string, unknown } from 'valibot';
-import { errorMessage } from './message-builders';
-import { Result, fail, ok } from './result';
-import { getFirstErrorMessage } from './validation-helpers';
-
-const websocketMessageSchema = object({
-  type: string(),
-  payload: record(string(), unknown()),
-});
-
-export function toWebsocketMessage(rawData: string): Result<WebsocketMessage> {
-  try {
-    const json = JSON.parse(rawData);
-
-    const result = safeParse(websocketMessageSchema, json, {
-      abortEarly: true,
-    });
-
-    if (result.success === false) {
-      return fail(getFirstErrorMessage(result.issues));
-    }
-
-    return ok(result.output);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return fail(message);
-  }
-}
-
-export type WebsocketMessage = Output<typeof websocketMessageSchema>;
+import { WebsocketMessage } from 'websocket-message';
+import { errorMessage } from './message-builders.js';
 
 export type MessageHandler = (
   message: Record<string, unknown>,

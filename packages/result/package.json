@@ -1,0 +1,26 @@
+{
+  "name": "result",
+  "version": "1.0.0",
+  "main": "dist/result.js",
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup"
+  },
+  "keywords": [
+    "result",
+    "typescript"
+  ],
+  "author": "devlulcas",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./result.ts",
+      "import": "./dist/result.mjs",
+      "default": "./dist/result.mjs"
+    }
+  },
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.2.2"
+  }
+}

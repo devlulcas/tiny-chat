@@ -1,10 +1,11 @@
 import { WebSocket } from '@fastify/websocket';
 import { FastifyRequest } from 'fastify';
+import { isFail } from 'result';
 import { object, safeParse, string } from 'valibot';
-import { ChatRoom } from './chat-room';
-import { errorMessage } from './message-builders';
-import { MessageRouter, toWebsocketMessage } from './message-router';
-import { isFail } from './result';
+import { toWebsocketMessage } from 'websocket-message';
+import { ChatRoom } from './chat-room.js';
+import { errorMessage } from './message-builders.js';
+import { MessageRouter } from './message-router.js';
 
 const chatRoom = new ChatRoom();
 

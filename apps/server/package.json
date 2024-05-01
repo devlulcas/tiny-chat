@@ -25,6 +25,8 @@
     "@fastify/rate-limit": "^9.1.0",
     "@fastify/websocket": "^10.0.1",
     "fastify": "^4.26.2",
-    "valibot": "^0.30.0"
+    "valibot": "^0.30.0",
+    "result": "workspace:*",
+    "websocket-message": "workspace:*"
   }
 }

@@ -10,5 +10,9 @@
   },
   "keywords": [],
   "author": "devlulcas",
-  "license": "ISC"
+  "license": "ISC",
+  "packageManager": "pnpm@9.0.6",
+  "devDependencies": {
+    "turbo": "^1.13.3"
+  }
 }

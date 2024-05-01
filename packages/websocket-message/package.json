@@ -1,0 +1,30 @@
+{
+  "name": "websocket-message",
+  "version": "1.0.0",
+  "main": "dist/websocket-message.mjs",
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup"
+  },
+  "keywords": [
+    "websocket-message",
+    "typescript"
+  ],
+  "author": "devlulcas",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./websocket-message.ts",
+      "import": "./dist/websocket-message.mjs",
+      "default": "./dist/websocket-message.mjs"
+    }
+  },
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "valibot": "^0.30.0",
+    "result": "workspace:*"
+  }
+}

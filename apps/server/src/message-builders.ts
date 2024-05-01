@@ -1,5 +1,5 @@
 import { SchemaIssues } from 'valibot';
-import { getFirstErrorMessage } from './validation-helpers';
+import { getFirstErrorMessage } from './validation-helpers.js';
 
 export function createMessage(
   type: string,

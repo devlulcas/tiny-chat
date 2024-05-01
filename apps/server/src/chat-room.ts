@@ -1,6 +1,6 @@
 import { WebSocket } from '@fastify/websocket';
-import { createMessage } from './message-builders';
-import { WebsocketMessage } from './message-router';
+import { WebsocketMessage } from 'websocket-message';
+import { createMessage } from './message-builders.js';
 
 type User = {
   username: string;

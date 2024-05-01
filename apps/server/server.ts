@@ -1,7 +1,7 @@
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyWebsocket from '@fastify/websocket';
 import Fastify from 'fastify';
-import { handleWebsocketConnection } from './src/handlers';
+import { handleWebsocketConnection } from './src/handlers.js';
 
 const LOGGER_CONFIG =
   process.env.NODE_ENV !== 'production'
@@ -24,7 +24,6 @@ fastify.get('/', (_, reply) => {
 fastify.register(fastifyWebsocket);
 
 fastify.register(async function (fastify) {
-  // @ts-expect-error - As definições de tipo da biblioteca não estão corretas
   fastify.get('/ws', { websocket: true }, handleWebsocketConnection);
 });
 
