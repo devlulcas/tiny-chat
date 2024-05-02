@@ -12,7 +12,7 @@ const chatRoom = new ChatRoom();
 const messageRouter = new MessageRouter();
 
 // Join
-messageRouter.addHandler('join', (payload, socket) => {
+messageRouter.addHandler('join', (payload, socket, req) => {
   const joinSchema = object({
     username: string(),
   });
@@ -20,22 +20,20 @@ messageRouter.addHandler('join', (payload, socket) => {
   const validated = safeParse(joinSchema, payload);
 
   if (validated.success === false) {
+    req.log.error(
+      'Erro ao validar mensagem de entrada: ' + JSON.stringify(validated.issues)
+    );
+
     return socket.send(errorMessage(validated.issues));
   }
 
-  chatRoom.join(
-    {
-      username: validated.output.username,
-      joinAttempts: 0,
-    },
-    socket
-  );
-
+  req.log.info('Entrando na sala: ' + validated.output.username);
+  chatRoom.join({ ...validated.output, joinAttempts: 0 }, socket);
   chatRoom.broadcast({ type: 'join', payload });
 });
 
 // Leave
-messageRouter.addHandler('leave', (payload, socket) => {
+messageRouter.addHandler('leave', (payload, socket, req) => {
   const leaveSchema = object({
     username: string(),
   });
@@ -43,16 +41,20 @@ messageRouter.addHandler('leave', (payload, socket) => {
   const validated = safeParse(leaveSchema, payload);
 
   if (validated.success === false) {
+    req.log.error(
+      'Erro ao validar mensagem de saída: ' + JSON.stringify(validated.issues)
+    );
+
     return socket.send(errorMessage(validated.issues));
   }
 
+  req.log.info('Saindo da sala: ' + validated.output.username);
   chatRoom.leave(validated.output.username);
-
   chatRoom.broadcast({ type: 'leave', payload });
 });
 
 // Message
-messageRouter.addHandler('message', (payload, socket) => {
+messageRouter.addHandler('message', (payload, socket, req) => {
   const messageSchema = object({
     username: string(),
     text: string(),
@@ -60,26 +62,47 @@ messageRouter.addHandler('message', (payload, socket) => {
 
   const validated = safeParse(messageSchema, payload);
 
+  req.log.info(JSON.stringify(validated.output));
+
   if (validated.success === false) {
+    req.log.error(
+      'Erro ao validar mensagem de texto: ' + JSON.stringify(validated.issues)
+    );
+
     return socket.send(errorMessage(validated.issues));
   }
 
-  console.log('Mensagem recebida:', validated.output.text);
-  chatRoom.join(
-    { username: validated.output.username, joinAttempts: 0 },
-    socket
-  );
+  if (!chatRoom.isAlreadyRegistered(validated.output.username)) {
+    req.log.error('Usuário não registrado: ' + validated.output.username);
+
+    chatRoom.join(
+      { username: validated.output.username, joinAttempts: 0 },
+      socket
+    );
+
+    req.log.info('Entrando na sala: ' + validated.output.username);
+  }
+
+  req.log.info('Enviando mensagem de: ' + validated.output.username);
   chatRoom.handleUserHeartbeat(validated.output.username);
   chatRoom.broadcast({ type: 'message', payload });
 });
 
 // Ping
-messageRouter.addHandler('ping', (payload, socket) => {
+messageRouter.addHandler('ping', (payload, socket, req) => {
   const pingSchema = object({ username: string() });
 
   const validated = safeParse(pingSchema, payload);
 
   if (validated.success) {
+    if (!chatRoom.isAlreadyRegistered(validated.output.username)) {
+      req.log.error('Usuário não registrado: ' + validated.output.username);
+
+      return socket.send(
+        errorMessage('Usuário não registrado. Por favor, entre na sala.')
+      );
+    }
+
     chatRoom.handleUserHeartbeat(validated.output.username);
   }
 
@@ -93,32 +116,38 @@ messageRouter.addHandler('close', (_, socket) => {
 
 export function handleWebsocketConnection(
   socket: WebSocket,
-  _req: FastifyRequest
+  req: FastifyRequest
 ) {
   socket.on('open', () => {
-    console.log('Conexão estabelecida');
+    req.log.info('Conexão estabelecida');
   });
 
   socket.on('close', () => {
-    console.log('Conexão fechada');
+    req.log.info('Conexão fechada');
   });
 
   socket.on('error', (error) => {
-    console.error('Erro:', error);
+    req.log.error('Erro:', error);
   });
 
   socket.on('message', async (data) => {
     const messageResult = toWebsocketMessage(data.toString());
 
     if (isFail(messageResult)) {
+      req.log.error('Erro ao processar mensagem: ' + messageResult.error);
       return socket.send(errorMessage(messageResult.error));
     }
 
-    await messageRouter.route(messageResult.data, socket);
+    await messageRouter.route(messageResult.data, socket, req);
+  });
+
+  socket.on('ping', () => {
+    req.log.info('Ping recebido');
+    socket.pong();
   });
 
   socket.on('pong', () => {
-    console.log('Pong recebido');
+    req.log.info('Pong recebido');
   });
 
   socket.send('Conexão estabelecida');

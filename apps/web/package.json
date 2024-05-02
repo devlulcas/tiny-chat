@@ -13,7 +13,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-use-websocket": "^4.8.1",
-    "solar-icon-set": "^1.0.0"
+    "solar-icon-set": "^1.0.0",
+    "result": "workspace:*",
+    "websocket-message": "workspace:*"
   },
   "devDependencies": {
     "@catppuccin/tailwindcss": "^0.1.6",

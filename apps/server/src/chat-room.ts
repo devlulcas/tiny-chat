@@ -16,11 +16,13 @@ export class ChatRoom {
 
   private users: Map<string, RecordedUser> = new Map();
 
+  isAlreadyRegistered(username: string) {
+    return this.users.has(username);
+  }
+
   join(user: User, socket: WebSocket) {
-    if (this.users.has(user.username)) {
-      return socket.send(
-        createMessage('warning', { message: 'Usuário já entrou no chat' })
-      );
+    if (this.isAlreadyRegistered(user.username)) {
+      return;
     }
 
     if (user.joinAttempts >= this.maxJoinAttempts) {
@@ -78,7 +80,9 @@ export class ChatRoom {
     console.log('Enviando mensagem para todos os usuários');
     console.log('Usuários conectados:', this.users.size);
 
-    for (const user of this.users.values()) {
+    // Send message to all connected users and show their usernames
+    for (const [username, user] of this.users.entries()) {
+      console.log('Enviando mensagem para:', username);
       user.socket.send(JSON.stringify(message));
     }
   }

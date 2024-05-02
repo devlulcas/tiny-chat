@@ -1,3 +1,4 @@
+import cors from '@fastify/cors';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyWebsocket from '@fastify/websocket';
 import Fastify from 'fastify';
@@ -10,6 +11,11 @@ const LOGGER_CONFIG =
 
 const fastify = Fastify({
   logger: LOGGER_CONFIG,
+});
+
+await fastify.register(cors, {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
 });
 
 fastify.register(fastifyRateLimit, {
