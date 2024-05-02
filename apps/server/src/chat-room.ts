@@ -76,7 +76,7 @@ export class ChatRoom {
     this.users.delete(user);
   }
 
-  broadcast(message: WebsocketMessage) {
+  async broadcast(message: WebsocketMessage) {
     console.log('Enviando mensagem para todos os usuários');
     console.log('Usuários conectados:', this.users.size);
 
@@ -87,11 +87,13 @@ export class ChatRoom {
     }
   }
 
-  handleUserHeartbeat(username: string) {
+  handleUserHeartbeat(username: string, socket: WebSocket) {
     const user = this.users.get(username);
 
     if (user) {
       user.lastHeartbeat = Date.now();
+      user.socket = socket;
+      this.users.set(username, user);
     }
   }
 }

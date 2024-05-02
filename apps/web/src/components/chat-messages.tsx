@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { ReadyState } from 'react-use-websocket';
+import { useMessageHistory } from '../hooks/use-message-history';
 import { useWS } from '../hooks/use-ws';
-import { ChatMessage } from '../types/chat-message';
 import { ChatMessageBubble } from './chat-message-bubble';
 import { LoadingSpinner } from './loading-spinner';
 
@@ -35,26 +35,18 @@ export function ChatMessages() {
 
 function useChatMessages() {
   const { readyState, lastMessage } = useWS();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-
-  console.log('lastMessage', lastMessage);
+  const { messages, addMessage } = useMessageHistory();
 
   useEffect(() => {
     if (lastMessage === null) return undefined;
 
     try {
       const message = JSON.parse(lastMessage.data);
-
-      if (message.type === 'message') {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { text: message.payload.text, username: message.payload.username },
-        ]);
-      }
+      addMessage(message);
     } catch (error) {
       console.error(error);
     }
-  }, [lastMessage]);
+  }, [addMessage, lastMessage]);
 
   return { readyState, messages };
 }

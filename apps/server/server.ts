@@ -27,7 +27,11 @@ fastify.get('/', (_, reply) => {
   reply.send({ hello: 'world' });
 });
 
-fastify.register(fastifyWebsocket);
+fastify.register(fastifyWebsocket, {
+  options: {
+    maxPayload: 1048576,
+  },
+});
 
 fastify.register(async function (fastify) {
   fastify.get('/ws', { websocket: true }, handleWebsocketConnection);

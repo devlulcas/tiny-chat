@@ -14,10 +14,10 @@ export function ChatWindowHeader() {
   };
 
   return (
-    <header className="flex items-center justify-center w-full p-4 bg-cat-mantle rounded-t-3xl">
+    <header className="flex items-center justify-center w-full p-4 bg-cat-mantle rounded-t-3xl relative">
       <CurrentStateIndicator />
 
-      <h1 className="text-2xl font-bold text-cat-lavender">
+      <h1 className="text-2xl font-bold text-cat-lavender flex-1">
         Hello, {username}!
       </h1>
 

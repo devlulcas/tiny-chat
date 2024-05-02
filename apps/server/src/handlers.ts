@@ -83,13 +83,15 @@ messageRouter.addHandler('message', (payload, socket, req) => {
     req.log.info('Entrando na sala: ' + validated.output.username);
   }
 
+  socket.send(JSON.stringify({ type: 'message', payload }));
+
   req.log.info('Enviando mensagem de: ' + validated.output.username);
-  chatRoom.handleUserHeartbeat(validated.output.username);
+  chatRoom.handleUserHeartbeat(validated.output.username, socket);
   chatRoom.broadcast({ type: 'message', payload });
 });
 
 // Ping
-messageRouter.addHandler('ping', (payload, socket, req) => {
+messageRouter.addHandler('heartbeat', (payload, socket, req) => {
   const pingSchema = object({ username: string() });
 
   const validated = safeParse(pingSchema, payload);
@@ -103,7 +105,7 @@ messageRouter.addHandler('ping', (payload, socket, req) => {
       );
     }
 
-    chatRoom.handleUserHeartbeat(validated.output.username);
+    chatRoom.handleUserHeartbeat(validated.output.username, socket);
   }
 
   socket.pong();
